@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
-import config from '../config';
-import {load} from '../utils/spreadsheets';
-import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import Autosuggest from 'react-autosuggest';
+import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import ListItem from '@material-ui/core/ListItem';
 import Song from './object/Song';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import { names } from './object/Skills';
 import SearchIcon from '@material-ui/icons/Search';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-
+import deburr from 'lodash/deburr';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import config from '../config';
+import {load} from '../utils/spreadsheets';
+import { withStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 
 const styles = theme => ({
@@ -33,6 +33,8 @@ const styles = theme => ({
     },
     root: {
     width: '100%',
+    flexGrow: 1,
+
     },
     grow: {
     marginLeft: 15
@@ -182,10 +184,136 @@ const styles = theme => ({
    textTransform:'uppercase'
  },
 
+ container: {
+   position: 'relative',
+ },
+ suggestionsContainerOpen: {
+   position: 'absolute',
+   zIndex: 1,
+   marginTop: theme.spacing.unit,
+   left: 0,
+   right: 0,
+ },
+ suggestion: {
+   display: 'block',
+ },
+ suggestionsList: {
+   margin: 0,
+   padding: 0,
+   listStyleType: 'none',
+ },
+ divider: {
+   height: theme.spacing.unit * 2,
+ },
+
 
 });
 
+
 class Content extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      data: {},
+      rows: [],
+      error: null,
+      single:'',
+      searchKeywords: "",
+      suggestions: []
+    }
+  }
+
+   renderInputComponent(inputProps) {
+    const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+
+    return (
+      <TextField
+        fullWidth
+        InputProps={{
+          inputRef: node => {
+            ref(node);
+            inputRef(node);
+          },
+          classes: {
+            input: classes.input,
+          },
+        }}
+        {...other}
+      />
+    );
+  }
+
+   renderSuggestion(suggestion, { query, isHighlighted }) {
+    const matches = match(suggestion, query);
+    const parts = parse(suggestion, matches);
+    return (
+      <ListItem selected={isHighlighted} component="div">
+        <div>
+          {parts.map((part, index) => {
+            return part.highlight ? (
+              <span key={String(index)} style={{ fontWeight: 500 }}>
+                {part.text}
+              </span>
+            ) : (
+              <strong key={String(index)} style={{ fontWeight: 300 }}>
+                {part.text}
+              </strong>
+            );
+          })}
+        </div>
+      </ListItem>
+    );
+  }
+
+   getSuggestions(value) {
+    const inputValue = deburr(value.trim()).toLowerCase();
+    const inputLength = inputValue.length;
+    let count = 0;
+    let keyWords = [];
+    this.state.rows.forEach( el => {
+        keyWords.push(el.artist);
+        keyWords.push(el.title);
+    })
+    let unique_array = keyWords.filter(function(elem, index, self) {
+       return index == self.indexOf(elem);
+     });
+
+    return inputLength === 0
+      ? []
+      : unique_array.filter(suggestion => {
+          const keep =
+            count < 5 && suggestion.slice(0, inputLength).toLowerCase() === inputValue;
+          if (keep) {
+            count += 1;
+          }
+          return keep;
+        });
+  }
+
+   getSuggestionValue(suggestion) {
+    return suggestion;
+    }
+
+    handleSuggestionsFetchRequested = ({ value }) => {
+      this.setState({
+        suggestions: this.getSuggestions(value),
+      });
+    };
+
+    handleSuggestionsClearRequested = () => {
+      this.setState({
+        suggestions: [],
+      });
+    };
+
+    handleChange = (event, { newValue }) => {
+      this.setState({
+        single: newValue,
+      });
+    };
+
 
   onLoad = (data, error) => {
     if (data) {
@@ -218,74 +346,26 @@ class Content extends Component {
     });
   };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-            data: {},
-            rows: [],
-            error: null,
-            searchArtist: "",
-            searchTitle: "",
-            skill: [],
-            anchorEl: null,
-
-        }
-    }
 
     handleClickMenu = event => {
     this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleCloseMenu = () => {
-    this.setState({ anchorEl: null });
-  };
-
-    handleChangeSkill = (name) => {
-      console.log(name)
-      if(this.state.skill.indexOf(name) < 0){
-        this.state.skill.push(name);
-      }else{
-        this.state.skill.forEach(function(el,index,array){
-          if(el===name){
-            array.splice(index,1)
-          }
-        })
-      }
-      this.setState({skill:this.state.skill})
-      this.renderChip();
     };
 
-    renderChip(){
-      if(this.state.skill !== ""){
-        return(
-        this.state.skill.map(value => (
-          <Chip key={value} color="primary" label={value} onDelete={this.handleDelete}  className={this.props.classes.chip}  />
-        ))
-      )
+    handleCloseMenu = () => {
+      this.setState({ anchorEl: null });
+    };
 
-      }
-    }
-
-    handleChangeKey(e){
+    handleChangeKey(e, { newValue }){
         let regex= /([A-Za-z0-9éèùúáàóòíìâêîôûäëïöüç& ])/g;
         if(e.target.value && e.target.value.match(regex)){
-        this.setState({searchArtist: e.target.value.match(regex).join('')});
+        this.setState({searchKeywords: e.target.value.match(regex).join('')});
         }else{
-            this.setState({searchArtist: ""});
+            this.setState({searchKeywords: ""});
         }
+        this.setState({
+          searchKeywords: newValue,
+        });
     };
-
-    handleChangeTitle(e){
-        let regex= /([A-Za-z0-9éèùúáàóòíìâêîôûäëïöüç ])/g;
-        if(e.target.value && e.target.value.match(regex)){
-            this.setState({searchTitle: e.target.value.match(regex).join('')});
-        }else{
-            this.setState({searchTitle: ""});
-
-        }
-
-    }
 
     data(test){
         this.setState({data: test})
@@ -300,15 +380,6 @@ class Content extends Component {
         this.setState({ open: false });
     };
 
-    handleDelete = event => {
-      this.state.skill.forEach(function(el,index,array){
-        if(el===event.currentTarget.previousElementSibling.innerHTML){
-          array.splice(index,1)
-        }
-      })
-      this.setState({skill:this.state.skill})
-      this.renderChip();
-      }
 
     renderContent(){
       if(this.state.rows.length === 0){
@@ -320,21 +391,9 @@ class Content extends Component {
       }
       else{
         let filterKeywords = this.state.rows.filter((row) => {
-            let search = row.artist;
-            return search.toLowerCase().match(this.state.searchArtist);
-        }).filter((title) => {
-            let result = title.title;
-            return result.toString().toLowerCase().match(this.state.searchTitle);
-        });
-
-        if(this.state.skill.length !== 0){
-          this.state.skill.forEach(function(el){
-            filterKeywords = filterKeywords.filter((skill) => {
-                let search = skill.skills;
-                return search.toLowerCase().match(el);
-            });
-          })
-        }
+            let search = row.artist + ' ' + row.title;
+            return search.match(this.state.searchKeywords);
+        })
         if(filterKeywords.length === 0){
          return(
            <div className={this.props.classes.containerNoresult}>
@@ -355,102 +414,64 @@ class Content extends Component {
           })
           return listSong;
         }
-
       }
-
     }
 
 
 
     render() {
       const { anchorEl } = this.state;
-        const { classes } = this.props;
-       
+      const { classes } = this.props;
+
+
 
         return (
             <div>
-              <div>
-              <AppBar position="static">
-               <Toolbar className="barResponsive">
-                 
-                 <div className={classes.search + " inputResponsive"}>
-                   <div className={classes.searchIcon}>
-                     <SearchIcon />
-                   </div>
-                   <InputBase
-                     placeholder="Search an artist…"
-                     type="text"
-                     value={this.state.searchArtist}
-                     onChange={this.handleChangeKey.bind(this)}
-                     classes={{
-                       root: classes.inputRoot,
-                       input: classes.inputInput,
-                     }}
-                   />
-                 </div>
-                 <div className={classes.search + " inputResponsive"}>
-                   <div className={classes.searchIcon}>
-                     <SearchIcon />
-                   </div>
-                   <InputBase
-                     placeholder="Search a Title..."
-                     type="text"
-                     value={this.state.searchTitle}
-                     onChange={this.handleChangeTitle.bind(this)}
-                     classes={{
-                       root: classes.inputRoot,
-                       input: classes.inputInput,
-                     }}
-                   />
-                 </div>
-                 {/*<div className = {classes.containerSelect + " select-responsive"}>
+              
+                <div className={classes.root}>
+                  <Autosuggest
+                    suggestions ={ this.state.suggestions}
+                    onSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}
+                    onSuggestionsClearRequested = {this.handleSuggestionsClearRequested}
+                    renderInputComponent = {this.renderInputComponent}
+                    getSuggestionValue = {this.getSuggestionValue}
+                    renderSuggestion = {this.renderSuggestion}
 
-                            <Button
-                        onClick={this.handleClickMenu}
-                        aria-owns={anchorEl ? 'simple-menu' : null}
-                        aria-haspopup="true"
-                        className="menuSelect"
-                      >
-                        Select your skill
-                      </Button>
-                      <Menu
-                        id="simple-menu"
-                        onClose={this.handleCloseMenu}
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                      >
-                       {names.map(name => (
-
-                         <MenuItem
-                           className={classes.optionSkill}
-                           key={name}
-                           value={name}
-                           button={Boolean(true)}
-                           onClick={()=>this.handleChangeSkill(name)}
-                           >
-                           <Checkbox checked={this.state.skill.indexOf(name) > -1}  value={name}/>
-                           <ListItemText primary={name}  value={name}/>
-                         </MenuItem>
-                       ))}*/}
-                     {/*</Select>*/}
-                     {/*</Menu>*/}
-
-
-                  {/*</div>*/}
-               </Toolbar>
-             </AppBar>
+                    onChange={this.handleChangeKey.bind(this)}
+                    inputProps={{
+                      classes,
+                      placeholder: 'Search',
+                      value: this.state.searchKeywords,
+                      onChange: this.handleChangeKey.bind(this)
+                    }}
+                    theme={{
+                      container: classes.container,
+                      suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                      suggestionsList: classes.suggestionsList,
+                      suggestion: classes.suggestion,
+                    }}
+                    renderSuggestionsContainer={options => (
+                      <Paper {...options.containerProps} square>
+                        {options.children}
+                      </Paper>
+                    )}
+                  />
+                  <div className={classes.divider} />
                 </div>
-                <div className={classes.chips}>
-                {this.renderChip()}
-                </div>
+
 
                 <div className="cards">
                   {this.renderContent()}
                 </div>
-                
+
             </div>
         );
     }
 }
+
+Content.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
 
 export default withStyles(styles)(Content);

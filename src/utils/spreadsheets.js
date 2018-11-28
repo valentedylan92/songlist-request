@@ -13,11 +13,12 @@ export function load(callback) {
           const data = response.result.values;
 					const newData = data.filter(singleData => singleData[0] !== undefined);
 				  let rows =
-            newData.map(row => ({
+            newData.map((row , index) => ({
               artist: row[0],
               title: row[1],
               movie: row[2],
               link: row[3],
+              id : index
             }
           )) || [];
           callback({
