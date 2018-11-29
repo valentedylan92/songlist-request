@@ -47,13 +47,17 @@
 }
 
 .song{
-  height: 100%;
   width: 100%;
-  height: 300px;
-  max-width: 350px;
+  height: 180px;
+  max-width: 360px;
   margin: 20px;
+
 }
 
+
+.inputSearchSong{
+
+}
 .header{
   padding: 15px;
   width: 100%;
@@ -63,7 +67,9 @@
   .barResponsive{
     flex-direction: column;
     align-items: flex-start !important;
-
+  }
+  .song{
+    height: 100%;
   }
   .inputResponsive{
     margin: 10px 0;
@@ -94,4 +100,10 @@
 .test{
   padding:15px !important;
   padding-top: 150px !important;
+}
+@media only screen and (max-width: 600px) {
+  .cardResponsive{
+    flex-direction: column-reverse;
+  }
+
 }

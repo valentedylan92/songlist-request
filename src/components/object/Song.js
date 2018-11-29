@@ -7,6 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import Button from '@material-ui/core/Button';
+import CardMedia from '@material-ui/core/CardMedia';
+import IconButton from '@material-ui/core/IconButton';
+import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import '../../App';
 
 const styles = {
@@ -14,15 +17,12 @@ const styles = {
         useNextVariants: true,
       },
     card: {
-        minHeight: 0,
-        minWidth: 0,
-        margin: 0,
-        padding: 0,
-        width: '100%',
-        height: '100%',
         display: "flex",
         justifyContent: "space-between",
-        flexDirection: "column",
+        flexDirection:'row-reverse',
+        maxWidth: 360,
+        width: '100%',
+        height: 180
     },
 
     title: {
@@ -111,7 +111,68 @@ const styles = {
     infoLink:{
         paddingLeft:0,
         fontSize:12
+    },
+
+    details: {
+      display: 'flex',
+      flexDirection: 'column',
+      padding: 15,
+      paddingRight:0,
+      maxWidth: 200,
+      width: '100%'
+
+    },
+
+    cover: {
+      width: '100%',
+      maxWidth :150
+    },
+    controls: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent:'center'
+    },
+    playIcon: {
+      height: 38,
+      width: 38,
+    },
+    title:{
+      fontSize:20,
+      fontWeight:300,
+      marginBottom: 10,
+      letterSpacing:2,
+      textAlign:'left'
+
+    },
+    artist:{
+      fontSize:16,
+      marginBottom: 10,
+      letterSpacing:2,
+      textAlign:'left'
+
+    },
+    addIcon:{
+      transitionProperty: 'background',
+      transitionDuration: '600ms'
+
+    },
+    '@media (max-width : 600px)': {
+    card: {
+      flexDirection:'column-reverse',
+      height : 250
+    },
+    title:{
+      fontSize : 16,
+      marginBottom:5
+    },
+    artist:{
+      fontSize : 12
+    },
+    cover:{
+      height:150,
+      maxWidth : 'inherit'
     }
+  }
 };
 
 class Song extends Component{
@@ -119,7 +180,7 @@ class Song extends Component{
     renderMovie(){
         if(this.props.song.movie !== ''){
           return(
-          
+
              <Typography className={this.props.classes.contentInformation} noWrap component="p">
                 <span className={this.props.classes.infoName}>Movie : </span>
                 <span className={this.props.classes.info}>{this.props.song.movie}</span>
@@ -127,41 +188,37 @@ class Song extends Component{
           )
         }
       }
- 
+
     render(){
         const { classes } = this.props;
         return (
-            <div className='song'>
-                <Card className={classes.card}>
-                    <CardContent className={classes.content}>
-                        <div className="header">
-                            <Typography noWrap component="h2" style={{color:'white'}}>
-                                {this.props.song.title}
-                            </Typography>
-                        </div>
-                        <div className={classes.cardContent}>
-                            <div>
-                                <Typography className={classes.contentInformation} component="p">
-                                    <span className={classes.infoName}>Artist : </span>
-                                    <span className={classes.info}>{this.props.song.artist}</span>
-                                </Typography>
-                            </div>
-                            <div>
-                                {this.renderMovie()}
-                            </div>
-                            <div>
-                                <Typography className={classes.contentLink} noWrap component="p">
-                                    <span className={classes.infoName}>Link of the sheet: </span>
-                                    <span className={classes.infoLink}>{this.props.song.link}</span>
-                                </Typography>
-                            </div>
-                        </div>
-                    </CardContent>
-                    <CardActions className={classes.action}>
-                        <Button className={classes.button} ><PanToolIcon className={classes.icon} />Request</Button>
-                    </CardActions>
-                </Card>
-            </div>
+          <div className='song'>
+            <Card className={classes.card + ' cardResponsive'}>
+              <div className={classes.details}>
+                <CardContent className={classes.content}>
+                  <Typography className={classes.title} component="h5">
+                  {this.props.song.title}
+
+                  </Typography>
+                  <Typography className={classes.artist}  color="textSecondary">
+                    {this.props.song.artist}
+                  </Typography>
+                </CardContent>
+                <div className={classes.controls}>
+
+                  <IconButton className={classes.addIcon} aria-label="Add">
+                    <AddCircleOutlinedIcon className={classes.playIcon} />
+                  </IconButton>
+
+                </div>
+              </div>
+              <CardMedia
+                className={classes.cover}
+                image="http://placecorgi.com/300/300"
+                title="Live from space album cover"
+              />
+            </Card>
+          </div>
         );
     }
 }

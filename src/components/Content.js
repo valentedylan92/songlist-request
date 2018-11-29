@@ -188,11 +188,13 @@ const styles = theme => ({
    position: 'relative',
  },
  suggestionsContainerOpen: {
-   position: 'absolute',
-   zIndex: 1,
+   position: 'fixed',
+   zIndex: 1300,
    marginTop: theme.spacing.unit,
-   left: 0,
-   right: 0,
+   right: 20,
+   top: 39,
+   right: 20,
+   width: 150
  },
  suggestion: {
    display: 'block',
@@ -205,6 +207,22 @@ const styles = theme => ({
  divider: {
    height: theme.spacing.unit * 2,
  },
+ appBar:{
+   top:64,
+   width: 'calc(100% - 240px)',
+   boxShadow:'0 4px 2px -2px gray;'
+ },
+ inputSearch:{
+   position: 'fixed',
+   top: 13,
+   right: 20,
+   zIndex: 1200,
+   width: 150,
+   color:'white',
+   borderBottomColor:'white',
+   borderBottomWidth:1,
+   borderBottomStyle:'solid',
+ }
 
 
 });
@@ -230,14 +248,14 @@ class Content extends Component {
 
     return (
       <TextField
-        fullWidth
+        className= "inputSearchSong"
         InputProps={{
           inputRef: node => {
             ref(node);
             inputRef(node);
           },
           classes: {
-            input: classes.input,
+            input: classes.inputSearch,
           },
         }}
         {...other}
@@ -284,7 +302,7 @@ class Content extends Component {
       ? []
       : unique_array.filter(suggestion => {
           const keep =
-            count < 5 && suggestion.slice(0, inputLength).toLowerCase() === inputValue;
+            count < 8 && suggestion.slice(0, inputLength).toLowerCase() === inputValue;
           if (keep) {
             count += 1;
           }
@@ -427,8 +445,7 @@ class Content extends Component {
 
         return (
             <div>
-              
-                <div className={classes.root}>
+
                   <Autosuggest
                     suggestions ={ this.state.suggestions}
                     onSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}
@@ -451,13 +468,12 @@ class Content extends Component {
                       suggestion: classes.suggestion,
                     }}
                     renderSuggestionsContainer={options => (
-                      <Paper {...options.containerProps} square>
+                      <Paper  {...options.containerProps} square>
                         {options.children}
                       </Paper>
                     )}
                   />
                   <div className={classes.divider} />
-                </div>
 
 
                 <div className="cards">
