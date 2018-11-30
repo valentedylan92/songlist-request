@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as  Route, Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -6,7 +7,6 @@ import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -15,7 +15,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
 import Toolbar from '@material-ui/core/Toolbar';
-import Content from './Content';
+import Container from './Container';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -51,6 +51,9 @@ const styles = theme => ({
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
   },
+  linkNav: {
+    textDecoration: 'none'
+  }
 });
 
 class NewDashBoard extends React.Component {
@@ -70,11 +73,13 @@ class NewDashBoard extends React.Component {
         <div className={classes.toolbar} />
         <Divider />
         <List>
-          {['Song list', 'Song Queue'].map((text, index) => (
-            <ListItem button key={text}>
+          {[{name:'Song list',link:'/'}, {name:'Song Queue',link:'/queue'}].map((text, index) => (
+            <Link className={classes.linkNav} key={index} to={text.link}>
+            <ListItem button key={text.name}>
               <ListItemIcon>{index % 2 === 0 ? <ListIcon /> : <LayersIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={text.name} />
             </ListItem>
+            </Link>
           ))}
         </List>
         <Divider />
@@ -132,7 +137,7 @@ class NewDashBoard extends React.Component {
         </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Content />
+          <Container />
         </main>
       </div>
     );

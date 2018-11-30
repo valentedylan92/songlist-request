@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import './App.css';
 import NewDashBoard from './components/NewDashBoard.js';
-import Dashboard from './components/Dashboard.js';
+import { BrowserRouter as Router } from "react-router-dom";
+
 
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <NewDashBoard />
+        <Router>
+          <NewDashBoard />
+        </Router>
       </div>
     );
   }

@@ -6,10 +6,6 @@ import Paper from '@material-ui/core/Paper';
 import ListItem from '@material-ui/core/ListItem';
 import Song from './object/Song';
 import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/Search';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import deburr from 'lodash/deburr';
 import match from 'autosuggest-highlight/match';
@@ -193,7 +189,6 @@ const styles = theme => ({
    marginTop: theme.spacing.unit,
    right: 20,
    top: 39,
-   right: 20,
    width: 150
  },
  suggestion: {
@@ -295,7 +290,7 @@ class Content extends Component {
         keyWords.push(el.title);
     })
     let unique_array = keyWords.filter(function(elem, index, self) {
-       return index == self.indexOf(elem);
+       return index === self.indexOf(elem);
      });
 
     return inputLength === 0

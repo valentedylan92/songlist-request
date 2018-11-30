@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
+import { BrowserRouter as  Route, Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import PanToolIcon from '@material-ui/icons/PanTool';
-import Button from '@material-ui/core/Button';
 import CardMedia from '@material-ui/core/CardMedia';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
@@ -125,18 +123,25 @@ const styles = {
 
     cover: {
       width: '100%',
-      maxWidth :150
+      height: '100%',
+      maxWidth :160
+    },
+    linkImg:{
+      display:'block',
+      maxWidth :160,
+      width: '100%'
     },
     controls: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent:'center'
+      justifyContent:'center',
+      paddingRight: 15
     },
     playIcon: {
       height: 38,
       width: 38,
     },
-    title:{
+    titleCard:{
       fontSize:20,
       fontWeight:300,
       marginBottom: 10,
@@ -161,7 +166,7 @@ const styles = {
       flexDirection:'column-reverse',
       height : 250
     },
-    title:{
+    titleCard:{
       fontSize : 16,
       marginBottom:5
     },
@@ -169,8 +174,14 @@ const styles = {
       fontSize : 12
     },
     cover:{
-      height:150,
+      height:100,
       maxWidth : 'inherit'
+    },
+    linkImg:{
+      display:'block',
+      width: '100%',
+      maxWidth : 'inherit'
+
     }
   }
 };
@@ -196,7 +207,7 @@ class Song extends Component{
             <Card className={classes.card + ' cardResponsive'}>
               <div className={classes.details}>
                 <CardContent className={classes.content}>
-                  <Typography className={classes.title} component="h5">
+                  <Typography className={classes.titleCard} component="h5">
                   {this.props.song.title}
 
                   </Typography>
@@ -205,18 +216,25 @@ class Song extends Component{
                   </Typography>
                 </CardContent>
                 <div className={classes.controls}>
+                  <Link className={classes.linkNav} key={this.props.song.id} to='/queue'>
 
                   <IconButton className={classes.addIcon} aria-label="Add">
                     <AddCircleOutlinedIcon className={classes.playIcon} />
                   </IconButton>
 
+                  </Link>
+
                 </div>
               </div>
+              <a className={classes.linkImg} href={this.props.song.link} target="_blank" rel="noreferrer noopener">
               <CardMedia
                 className={classes.cover}
-                image="http://placecorgi.com/300/300"
-                title="Live from space album cover"
+                image={this.props.song.img}
+                title={"Cover " + this.props.song.title + " - " + this.props.song.artist}
               />
+              </a>
+
+
             </Card>
           </div>
         );
