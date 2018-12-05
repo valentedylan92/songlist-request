@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import '../../App';
 
@@ -187,7 +187,10 @@ const styles = {
 };
 
 class Song extends Component{
-
+    handleQueue(){
+        this.props.queue(this.props.song);
+        console.log(this.props.song)
+    }
     renderMovie(){
         if(this.props.song.movie !== ''){
           return(
@@ -216,12 +219,10 @@ class Song extends Component{
                   </Typography>
                 </CardContent>
                 <div className={classes.controls}>
-                  <Link className={classes.linkNav} key={this.props.song.id} to='/queue'>
-
-                  <IconButton className={classes.addIcon} aria-label="Add">
+                  <Link to='/queue'>
+                  <Button onClick={()=>this.handleQueue()} className={classes.addIcon} aria-label="Add">
                     <AddCircleOutlinedIcon className={classes.playIcon} />
-                  </IconButton>
-
+                  </Button>
                   </Link>
 
                 </div>

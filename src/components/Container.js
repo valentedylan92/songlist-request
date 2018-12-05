@@ -14,8 +14,12 @@ function Container({ location }) {
         >
           <section className="route-section">
             <Switch location={location}>
-              <Route exact path="/"  component={Content}/>
-              <Route exact path="/queue"  component={Queue}/>
+              <Route exact path="/"
+                component={Content}
+              />
+              <Route exact path="/queue"
+                component={Queue}
+              />
             </Switch>
           </section>
         </CSSTransition>

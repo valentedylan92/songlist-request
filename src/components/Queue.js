@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import Paper from '@material-ui/core/Paper';
+import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
+import Rebase from 're-base';
+import app from '../Base';
+var base = Rebase.createClass(app.database());
 
 const CustomTableCell = withStyles(theme => ({
   head: {
@@ -20,6 +23,8 @@ const CustomTableCell = withStyles(theme => ({
     fontSize: 14,
   },
 }))(TableCell);
+
+
 
 const styles = theme => ({
   root: {
@@ -42,17 +47,43 @@ const styles = theme => ({
   },
 });
 
-let id = 0;
-function createData(name, calories, fat, carbs, protein) {
-  id += 1;
-  return { id, name, calories, fat, carbs, protein };
-}
+class Queue extends Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        queue: [],
+        username : 'Test'
+      }
+    }
 
-const rows = [];
+    componentDidMount(){
+      base.syncState(`/`, {
+         context: this,
+         state: 'queue',
+         asArray:true
+       }, () => this.test());
+    }
+    test(){
 
-function CustomizedTable(props) {
-  const { classes } = props;
 
+    }
+
+    removeSong(idDelete) {
+      let deleteQueue = this.state.queue;
+      deleteQueue.splice(idDelete,1)
+      this.setState({queue: deleteQueue})
+    }
+    bumpSong(idBump) {
+      let bumpQueue = this.state.queue;
+      let bumpWait = this.state.queue[idBump]
+      bumpQueue.splice(idBump,1);
+      bumpQueue.unshift(bumpWait)
+      this.setState({queue: bumpQueue})
+    }
+
+
+  render(){
+    const { classes } = this.props;
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
@@ -64,18 +95,21 @@ function CustomizedTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.length > 0 ?
-            rows.map(row => {
+          {this.state.queue.length > 0 ?
+            this.state.queue.map((row,index) => {
               return (
-                <TableRow className={classes.row} key={row.id}>
+                <TableRow className={classes.row} key={index}>
                   <CustomTableCell component="th" scope="row">
-                    {row.name}
+                    {row.artist} - {row.title}
                   </CustomTableCell>
-                  <CustomTableCell numeric>{row.calories}</CustomTableCell>
-                  <CustomTableCell numeric>
-                  <IconButton className={classes.addIcon} aria-label="Add">
+                  <CustomTableCell>{this.state.username}</CustomTableCell>
+                  <CustomTableCell>
+                  <Button onClick={()=>this.bumpSong(index)} className={classes.addIcon} aria-label="Add">
+                    <StarBorderRoundedIcon className={classes.playIcon} />
+                  </Button>
+                  <Button onClick={()=>this.removeSong(index)} className={classes.addIcon} aria-label="Add">
                     <DeleteIcon className={classes.playIcon} />
-                  </IconButton>
+                  </Button>
                   </CustomTableCell>
                 </TableRow>
               );
@@ -93,9 +127,11 @@ function CustomizedTable(props) {
     </Paper>
   );
 }
+}
 
-CustomizedTable.propTypes = {
+
+Queue.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(CustomizedTable);
+export default withStyles(styles)(Queue);

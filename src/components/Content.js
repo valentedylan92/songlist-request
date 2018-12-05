@@ -14,6 +14,10 @@ import config from '../config';
 import {load} from '../utils/spreadsheets';
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import Rebase from 're-base';
+import app from '../Base';
+var base = Rebase.createClass(app.database());
+
 
 
 const styles = theme => ({
@@ -229,13 +233,19 @@ class Content extends Component {
     super(props);
     this.state = {
       open: false,
-      data: {},
+      data: [],
       rows: [],
+      queue: [],
       error: null,
       single:'',
       searchKeywords: "",
       suggestions: []
     }
+  }
+
+  data(test){
+      this.setState({data: test})
+      this.handleOpen()
   }
 
    renderInputComponent(inputProps) {
@@ -342,19 +352,21 @@ class Content extends Component {
   componentDidMount() {
   // 1. Load the JavaScript client library.
   window.gapi.load("client", this.initClient);
+  base.syncState(`/`, {
+     context: this,
+     state: 'queue',
+     asArray:true
+   });
   }
 
 
   initClient = () => {
-  // 2. Initialize the JavaScript client library.
     window.gapi.client
       .init({
         apiKey: config.apiKey,
-        // Your API key will be automatically added to the Discovery Document URLs.
         discoveryDocs: config.discoveryDocs
       })
       .then(() => {
-      // 3. Initialize and make the API request.
       load(this.onLoad);
     });
   };
@@ -380,19 +392,22 @@ class Content extends Component {
         });
     };
 
-    data(test){
-        this.setState({data: test})
-        this.handleOpen()
+    queue(test){
+        let newQueue = this.state.queue;
+        let flag = false;
+
+        newQueue.forEach(el => {
+            if (el.id == test.id) {
+                flag = true
+                return false;
+            }
+        })
+
+        if (!flag) {
+            newQueue.push(test)
+        }
+        this.setState({queue: newQueue})
     }
-
-    handleOpen(){
-        this.setState({ open: true });
-    };
-
-    handleClose(){
-        this.setState({ open: false });
-    };
-
 
     renderContent(){
       if(this.state.rows.length === 0){
@@ -421,7 +436,7 @@ class Content extends Component {
               <Song
                   key={i}
                   song={row}
-                  data={this.data.bind(this)}
+                  queue={this.queue.bind(this)}
               />
             )
           })
