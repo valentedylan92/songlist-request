@@ -80,7 +80,18 @@ section.route-section {
   height: 180px;
   max-width: 360px;
   margin: 20px;
+}
 
+.song:hover .scaleEffect{
+  transform: scale(1.2);
+}
+
+.scaleEffect svg{
+  -webkit-font-smoothing: subpixel-antialiased;
+  
+}
+.scaleEffect {
+  transition: transform 500ms ease;
 }
 
 

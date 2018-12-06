@@ -18,8 +18,6 @@ import Rebase from 're-base';
 import app from '../Base';
 var base = Rebase.createClass(app.database());
 
-
-
 const styles = theme => ({
     typography: {
         useNextVariants: true,
@@ -118,7 +116,6 @@ const styles = theme => ({
       float: "right",
       fontSize:14,
     },
-
       closeButton:{
         cursor:"pointer",
         position: "absolute",
@@ -129,9 +126,7 @@ const styles = theme => ({
         transitionDuration: '800ms',
         '&:hover':{
           transform: 'rotate(180deg)',
-
         }
-
     },
     containerSelect: {
     margin: theme.spacing.unit,
@@ -337,7 +332,6 @@ class Content extends Component {
       });
     };
 
-
   onLoad = (data, error) => {
     if (data) {
       this.setState({
@@ -348,7 +342,6 @@ class Content extends Component {
     }
   };
 
-
   componentDidMount() {
   // 1. Load the JavaScript client library.
   window.gapi.load("client", this.initClient);
@@ -358,7 +351,6 @@ class Content extends Component {
      asArray:true
    });
   }
-
 
   initClient = () => {
     window.gapi.client
@@ -371,16 +363,7 @@ class Content extends Component {
     });
   };
 
-
-    handleClickMenu = event => {
-    this.setState({ anchorEl: event.currentTarget });
-    };
-
-    handleCloseMenu = () => {
-      this.setState({ anchorEl: null });
-    };
-
-    handleChangeKey(e, { newValue }){
+  handleChangeKey(e, { newValue }){
         let regex= /([A-Za-z0-9éèùúáàóòíìâêîôûäëïöüç& ])/g;
         if(e.target.value && e.target.value.match(regex)){
         this.setState({searchKeywords: e.target.value.match(regex).join('')});
@@ -397,7 +380,7 @@ class Content extends Component {
         let flag = false;
 
         newQueue.forEach(el => {
-            if (el.id == test.id) {
+            if (el.id === test.id) {
                 flag = true
                 return false;
             }
@@ -444,18 +427,10 @@ class Content extends Component {
         }
       }
     }
-
-
-
     render() {
-      const { anchorEl } = this.state;
       const { classes } = this.props;
-
-
-
         return (
             <div>
-
                   <Autosuggest
                     suggestions ={ this.state.suggestions}
                     onSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}
@@ -485,11 +460,9 @@ class Content extends Component {
                   />
                   <div className={classes.divider} />
 
-
                 <div className="cards">
                   {this.renderContent()}
                 </div>
-
             </div>
         );
     }

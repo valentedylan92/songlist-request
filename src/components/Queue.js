@@ -89,9 +89,10 @@ class Queue extends Component {
       <Table className={classes.table}>
         <TableHead className={classes.tableHead}>
           <TableRow>
+            <CustomTableCell></CustomTableCell>
             <CustomTableCell>Song</CustomTableCell>
-            <CustomTableCell numeric>User name</CustomTableCell>
-            <CustomTableCell numeric></CustomTableCell>
+            <CustomTableCell>User name</CustomTableCell>
+            <CustomTableCell></CustomTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -99,6 +100,9 @@ class Queue extends Component {
             this.state.queue.map((row,index) => {
               return (
                 <TableRow className={classes.row} key={index}>
+                  <CustomTableCell component="th" scope="row">
+                    {index+1}
+                  </CustomTableCell>
                   <CustomTableCell component="th" scope="row">
                     {row.artist} - {row.title}
                   </CustomTableCell>

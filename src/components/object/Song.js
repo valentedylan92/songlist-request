@@ -8,6 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import '../../App';
 
 const styles = {
@@ -20,7 +22,9 @@ const styles = {
         flexDirection:'row-reverse',
         maxWidth: 360,
         width: '100%',
-        height: 180
+        height: 180,
+        overflow:"inherit",
+
     },
 
     title: {
@@ -120,6 +124,15 @@ const styles = {
       width: '100%'
 
     },
+    iconSubinfos:{
+      color : 'white',
+      position :'absolute',
+      top : '50%',
+      left : '50%',
+      transform : 'translate(-50%,-50%)',
+      fontSize : 25,
+      zIndex:20000,
+    },
 
     cover: {
       width: '100%',
@@ -129,7 +142,9 @@ const styles = {
     linkImg:{
       display:'block',
       maxWidth :160,
-      width: '100%'
+      width: '100%',
+      position:'relative'
+
     },
     controls: {
       display: 'flex',
@@ -161,6 +176,26 @@ const styles = {
       transitionDuration: '600ms'
 
     },
+    SubInfosFav:{
+      width:'40px',
+      height: '40px',
+      background: '#ff2344',
+      position: 'absolute',
+      bottom:-10,
+      left:-10,
+      borderRadius:'100%',
+
+    },
+    SubInfosNew:{
+      width:'40px',
+      height: '40px',
+      background: '#3f51b5',
+      position: 'absolute',
+      bottom:-10,
+      left:-10,
+      borderRadius:'100%',
+
+    },
     '@media (max-width : 600px)': {
     card: {
       flexDirection:'column-reverse',
@@ -180,9 +215,8 @@ const styles = {
     linkImg:{
       display:'block',
       width: '100%',
-      maxWidth : 'inherit'
-
-    }
+      maxWidth : 'inherit',
+    },
   }
 };
 
@@ -228,6 +262,16 @@ class Song extends Component{
                 </div>
               </div>
               <a className={classes.linkImg} href={this.props.song.link} target="_blank" rel="noreferrer noopener">
+              {this.props.song.subInfos !== '' && this.props.song.subInfos==='fav' ?
+              <div className={classes.SubInfosFav + ' scaleEffect'}>
+                <FavoriteIcon className={classes.iconSubinfos} />
+              </div> : ''
+              }
+              {this.props.song.subInfos !== '' && this.props.song.subInfos==='new' ?
+              <div className={classes.SubInfosNew + ' scaleEffect'}>
+                <NewReleasesIcon className={classes.iconSubinfos} />
+              </div> : ''
+              }
               <CardMedia
                 className={classes.cover}
                 image={this.props.song.img}
